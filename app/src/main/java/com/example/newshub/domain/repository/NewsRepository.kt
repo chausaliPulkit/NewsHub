@@ -1,15 +1,21 @@
 package com.example.newshub.domain.repository
 
+import androidx.lifecycle.LiveData
+import androidx.paging.PagingData
 import com.example.newshub.data.model.Article
-import com.example.newshub.data.model.NewsApiResponse
-import com.example.newshub.data.util.Resource
 import kotlinx.coroutines.flow.Flow
 
 interface NewsRepository {
 
     //    function for network communication
-    suspend fun getNewsHeadLines(country: String, page: Int): Resource<NewsApiResponse>
-    suspend fun getSearchedNews(searchQuery: String): Resource<NewsApiResponse>
+    fun getNewsHeadLines(
+        country: String,
+    ): Flow<PagingData<Article>>
+
+    fun getSearchedNews(
+        country: String,
+        searchQuery: String,
+    ): LiveData<PagingData<Article>>
 
     //    function related to local database
     suspend fun saveNews(article: Article)

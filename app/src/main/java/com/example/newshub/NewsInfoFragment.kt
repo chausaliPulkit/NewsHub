@@ -1,9 +1,11 @@
 package com.example.newshub
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
@@ -29,8 +31,25 @@ class NewsInfoFragment : Fragment() {
         binding = FragmentNewsInfoBinding.bind(view)
         val args: NewsInfoFragmentArgs by navArgs()
         val selectedArticle = args.selectedArticle
+        val webClient = object : WebViewClient() {
+            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                super.onPageStarted(view, url, favicon)
+                // Show a progress bar while loading
+                binding.progressBar.visibility = View.VISIBLE
+            }
+
+            override fun onPageFinished(view: WebView?, url: String?) {
+                super.onPageFinished(view, url)
+                // Hide the progress bar after loading
+                binding.progressBar.visibility = View.GONE
+
+            }
+        }
         binding.newsInfoWebView.apply {
-            webViewClient = WebViewClient()
+//            settings.javaScriptEnabled = true
+            webViewClient = webClient
+
+
             if (selectedArticle.url != "") {
                 loadUrl(selectedArticle.url)
             }

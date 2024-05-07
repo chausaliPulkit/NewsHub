@@ -1,8 +1,15 @@
 package com.example.newshub.data.repositoryimpl.datasource
 
-import com.example.newshub.data.model.NewsApiResponse
-import retrofit2.Response
+import androidx.lifecycle.LiveData
+import androidx.paging.PagingData
+import com.example.newshub.data.model.Article
+import kotlinx.coroutines.flow.Flow
 
 interface NewsRemoteDataSource {
-    suspend fun getTopHeadlines(country: String, page: Int): Response<NewsApiResponse>
+    fun getTopHeadlines(country: String): Flow<PagingData<Article>>
+
+    fun getSearchedTopHeadlines(
+        country: String,
+        query: String,
+    ): LiveData<PagingData<Article>>
 }

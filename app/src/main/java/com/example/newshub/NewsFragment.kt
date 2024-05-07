@@ -4,16 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AbsListView
-import android.widget.Toast
+import android.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.newshub.data.util.Resource
 import com.example.newshub.databinding.FragmentNewsBinding
+import com.example.newshub.presentation.adapter.LoaderAdapter
 import com.example.newshub.presentation.adapter.NewsAdapter
 import com.example.newshub.presentation.viewmodel.NewsViewModel
+import kotlinx.coroutines.launch
 
 
 class NewsFragment : Fragment() {
@@ -53,48 +53,75 @@ class NewsFragment : Fragment() {
             )
         }
         initRecyclerView()
-        viewNewsList()
+        viewNewsListUtil()
     }
 
-    // on the basis of response Code it will show list
-    private fun viewNewsList() {
-        viewModel.getNewsHeadlines(country, page)
-        viewModel.newsHeadlines.observe(viewLifecycleOwner) { response ->
-            when (response) {
-                is Resource.Success -> {
-                    hideProgressBar()
-                    response.data?.let {
-                        newsAdapter.differ.submitList(it.articles.toList())
-                        if (it.totalResults % 20 == 0) {
-                            pages = it.totalResults / 20
-                        } else {
-                            pages = it.totalResults / 20 + 1
-                        }
-                        isLastPage = page == pages
-                    }
-                }
-
-                is Resource.Error -> {
-                    hideProgressBar()
-                    response.message?.let {
-                        Toast.makeText(activity, "An error occurred : $it", Toast.LENGTH_LONG)
-                            .show()
-                    }
-                }
-
-                is Resource.Loading -> {
-                    showProgressBar()
-                }
+    private fun viewNewsListUtil() {
+        lifecycleScope.launch {
+            viewModel.newsHeadlines.collect {
+                newsAdapter.submitData(it)
             }
         }
     }
 
+    private fun setSearchView() {
+        binding.newsSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(p0: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(p0: String?): Boolean {
+//                MainScope().launch {
+                return false
+//                }
+            }
+
+        })
+        binding.newsSearchView.setOnCloseListener { TODO("Implement it") }
+    }
+
+    // on the basis of response Code it will show list
+//    private fun viewNewsList() {
+//        viewModel.getNewsHeadlines(country, page)
+//        viewModel.newsHeadlines.observe(viewLifecycleOwner) { response ->
+//            when (response) {
+//                is Resource.Success -> {
+//                    hideProgressBar()
+//                    response.data?.let {
+//                        newsAdapter.submitData(lifecycle, it.c)
+//                        if (it.totalResults % 20 == 0) {
+//                            pages = it.totalResults / 20
+//                        } else {
+//                            pages = it.totalResults / 20 + 1
+//                        }
+//                        isLastPage = page == pages
+//                    }
+//                }
+//
+//                is Resource.Error -> {
+//                    hideProgressBar()
+//                    response.message?.let {
+//                        Toast.makeText(activity, "An error occurred : $it", Toast.LENGTH_LONG)
+//                            .show()
+//                    }
+//                }
+//
+//                is Resource.Loading -> {
+//                    showProgressBar()
+//                }
+//            }
+//        }
+//    }
+
     //    initialize recycler view
     private fun initRecyclerView() {
         binding.newsRecyclerView.apply {
-            adapter = newsAdapter
+            adapter = newsAdapter.withLoadStateHeaderAndFooter(
+                header = LoaderAdapter { newsAdapter.retry() },
+                footer = LoaderAdapter { newsAdapter.retry() }
+            )
             layoutManager = LinearLayoutManager(activity)
-            addOnScrollListener(this@NewsFragment.onScrollListener)
+
         }
 
     }
@@ -109,32 +136,4 @@ class NewsFragment : Fragment() {
         binding.newsProgressBar.visibility = View.GONE
     }
 
-    //    this will override OnScrollListener function of RecyclerView
-//    to check if user is scrolling or not
-    private val onScrollListener = object : RecyclerView.OnScrollListener() {
-        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-            if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
-                isScrolling = true
-            }
-        }
-
-        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-            val layoutManager = binding.newsRecyclerView.layoutManager as LinearLayoutManager
-            val sizeOfCurrentList = layoutManager.itemCount
-            val visibleItemsOnScreen = layoutManager.childCount
-            val topPositionOfCurrentListItem = layoutManager.findFirstVisibleItemPosition()
-
-//            this will check if current list reached to last item of currentList or not
-            val hasReachedToEnd =
-                topPositionOfCurrentListItem + visibleItemsOnScreen >= sizeOfCurrentList
-            val shouldPaginate = !isLoading && !isLastPage && hasReachedToEnd && isScrolling
-
-//            if pagination happen page should increase by 1
-            if (shouldPaginate) {
-                page++
-                viewModel.getNewsHeadlines(country, page)
-                isScrolling = false
-            }
-        }
-    }
 }

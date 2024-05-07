@@ -2,7 +2,7 @@ package com.example.newshub.presentation.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -10,9 +10,8 @@ import com.example.newshub.data.model.Article
 import com.example.newshub.databinding.NewsListItemBinding
 import java.text.SimpleDateFormat
 
-class NewsAdapter() : RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
+class NewsAdapter() : PagingDataAdapter<Article, NewsAdapter.NewsViewHolder>(callBack) {
 
-    val differ = AsyncListDiffer(this, callBack)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsViewHolder {
         val binding =
@@ -20,12 +19,8 @@ class NewsAdapter() : RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
         return NewsViewHolder(binding)
     }
 
-    override fun getItemCount(): Int {
-        return differ.currentList.size
-    }
-
     override fun onBindViewHolder(holder: NewsViewHolder, position: Int) {
-        val article = differ.currentList[position]
+        val article = getItem(position)
         if (article != null) {
             holder.bind(article)
         }
@@ -38,7 +33,7 @@ class NewsAdapter() : RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
     }
 
 
-    inner class NewsViewHolder(val binding: NewsListItemBinding) :
+    inner class NewsViewHolder(private val binding: NewsListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(article: Article) {
@@ -48,9 +43,11 @@ class NewsAdapter() : RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
                 newsPublishedDate.text = formattedDate(article.publishedAt)
                 newsSource.text = article.source.name
 
+
                 Glide.with(newsImage.context)
                     .load(article.urlToImage)
                     .into(newsImage)
+
 
                 root.setOnClickListener {
                     onItemClickListener?.let {

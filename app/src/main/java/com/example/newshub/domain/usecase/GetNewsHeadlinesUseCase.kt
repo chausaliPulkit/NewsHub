@@ -1,12 +1,13 @@
 package com.example.newshub.domain.usecase
 
-import com.example.newshub.data.model.NewsApiResponse
-import com.example.newshub.data.util.Resource
+import androidx.paging.PagingData
+import com.example.newshub.data.model.Article
 import com.example.newshub.domain.repository.NewsRepository
+import kotlinx.coroutines.flow.Flow
 
 class GetNewsHeadlinesUseCase(private val newsRepository: NewsRepository) {
 
-    suspend fun execute(country: String, page: Int): Resource<NewsApiResponse> {
-        return newsRepository.getNewsHeadLines(country, page)
+    fun execute(country: String): Flow<PagingData<Article>> {
+        return newsRepository.getNewsHeadLines(country)
     }
 }
