@@ -54,6 +54,7 @@ dependencies {
     val nav_version = "2.7.7"
     val glide_version = "4.16.0"
     val paging_version = "3.2.1"
+    val room_version = "2.6.1"
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
@@ -68,7 +69,16 @@ dependencies {
 //    implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version")
     kapt("androidx.lifecycle:lifecycle-compiler:$lifecycle_version")
 //    paging library
-    implementation("androidx.paging:paging-runtime:$paging_version")
+    implementation("androidx.paging:paging-runtime-ktx:$paging_version")
+
+//    Room Library
+    implementation("androidx.room:room-runtime:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+
+    // To use Kotlin annotation processing tool (kapt)
+    kapt("androidx.room:room-compiler:$room_version")
+    // optional - Paging 3 Integration
+    implementation("androidx.room:room-paging:$room_version")
 
     // Jetpack navigation library
     implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")

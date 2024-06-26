@@ -11,5 +11,5 @@ interface NewsRemoteDataSource {
     fun getSearchedTopHeadlines(
         country: String,
         query: String,
-    ): LiveData<PagingData<Article>>
+    ): Flow<PagingData<Article>>
 }

@@ -1,6 +1,5 @@
 package com.example.newshub.domain.repository
 
-import androidx.lifecycle.LiveData
 import androidx.paging.PagingData
 import com.example.newshub.data.model.Article
 import kotlinx.coroutines.flow.Flow
@@ -15,7 +14,7 @@ interface NewsRepository {
     fun getSearchedNews(
         country: String,
         searchQuery: String,
-    ): LiveData<PagingData<Article>>
+    ): Flow<PagingData<Article>>
 
     //    function related to local database
     suspend fun saveNews(article: Article)

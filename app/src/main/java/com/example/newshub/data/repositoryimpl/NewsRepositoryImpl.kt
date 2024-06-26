@@ -1,16 +1,17 @@
 package com.example.newshub.data.repositoryimpl
 
-import androidx.lifecycle.LiveData
 import androidx.paging.PagingData
 import com.example.newshub.data.model.Article
+import com.example.newshub.data.repositoryimpl.datasource.NewsLocalDataSource
 import com.example.newshub.data.repositoryimpl.datasource.NewsRemoteDataSource
 import com.example.newshub.domain.repository.NewsRepository
 import kotlinx.coroutines.flow.Flow
 
 class NewsRepositoryImpl(
     private val newsRemoteDataSource: NewsRemoteDataSource,
+    private val newsLocalDataSource: NewsLocalDataSource
 
-    ) : NewsRepository {
+) : NewsRepository {
     companion object {
         const val NETWORK_PAGE_SIZE = 20
     }
@@ -22,7 +23,7 @@ class NewsRepositoryImpl(
     override fun getSearchedNews(
         country: String,
         searchQuery: String,
-    ): LiveData<PagingData<Article>> {
+    ): Flow<PagingData<Article>> {
         return newsRemoteDataSource.getSearchedTopHeadlines(
             country,
             searchQuery,
@@ -30,7 +31,7 @@ class NewsRepositoryImpl(
     }
 
     override suspend fun saveNews(article: Article) {
-        TODO("Not yet implemented")
+        newsLocalDataSource.saveArticleToDb(article)
     }
 
     override suspend fun deleteNews(article: Article) {

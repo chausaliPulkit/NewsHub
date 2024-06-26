@@ -5,6 +5,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -12,24 +13,34 @@ import androidx.paging.cachedIn
 import com.example.newshub.data.model.Article
 import com.example.newshub.domain.usecase.GetNewsHeadlinesUseCase
 import com.example.newshub.domain.usecase.GetSearchedNewsUseCase
+import com.example.newshub.domain.usecase.SaveNewsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class NewsViewModel @Inject constructor(
     private val applicationContext: Application,
     private val getNewsHeadlinesUseCase: GetNewsHeadlinesUseCase,
-    private val getSearchedNewsUseCase: GetSearchedNewsUseCase
+    private val getSearchedNewsUseCase: GetSearchedNewsUseCase,
+    private val saveNewsUseCase: SaveNewsUseCase
 ) : AndroidViewModel(applicationContext) {
     val newsHeadlines: Flow<PagingData<Article>> =
         getNewsHeadlinesUseCase.execute("in").cachedIn(viewModelScope)
+    var searchedNewsHeadlines: Flow<PagingData<Article>> = MutableSharedFlow()
 
-//    fun getSearchedNews(country: String, query: String) {
-//        val apiResult = getSearchedNewsUseCase.execute(country, query)
-//            .cachedIn(viewModelScope)
-//        searchedNewsHeadlines = apiResult
-//    }
+    fun getSearchedNews(country: String, query: String) {
+        val apiResult = getSearchedNewsUseCase.execute(country, query)
+            .cachedIn(viewModelScope)
+        Log.d("MY_TAG", "Inside getSearchedNews Function")
+        searchedNewsHeadlines = apiResult
+    }
+
+    fun saveArticleLocally(article: Article) = viewModelScope.launch {
+        saveNewsUseCase.execute(article)
+    }
 
 //    fun getNewsHeadlines(country: String, page: Int) {
 //        viewModelScope.launch {

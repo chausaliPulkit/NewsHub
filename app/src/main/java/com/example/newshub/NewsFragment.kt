@@ -54,6 +54,7 @@ class NewsFragment : Fragment() {
         }
         initRecyclerView()
         viewNewsListUtil()
+        setSearchView()
     }
 
     private fun viewNewsListUtil() {
@@ -64,20 +65,32 @@ class NewsFragment : Fragment() {
         }
     }
 
+    private fun viewSearchNewsListUtil(country: String, query: String) {
+        viewModel.getSearchedNews(country, query)
+        lifecycleScope.launch {
+            viewModel.searchedNewsHeadlines.collect {
+                newsAdapter.submitData(it)
+            }
+        }
+    }
+
     private fun setSearchView() {
         binding.newsSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(p0: String?): Boolean {
+                viewSearchNewsListUtil(country, p0.toString())
                 return false
             }
 
             override fun onQueryTextChange(p0: String?): Boolean {
-//                MainScope().launch {
+                viewSearchNewsListUtil(country, p0.toString())
                 return false
-//                }
             }
 
         })
-        binding.newsSearchView.setOnCloseListener { TODO("Implement it") }
+        binding.newsSearchView.setOnCloseListener {
+            viewNewsListUtil()
+            false
+        }
     }
 
     // on the basis of response Code it will show list

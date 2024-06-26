@@ -40,8 +40,8 @@ class NewsAdapter() : PagingDataAdapter<Article, NewsAdapter.NewsViewHolder>(cal
             binding.apply {
                 newsTitle.text = article.title
                 newsDescription.text = article.description
-                newsPublishedDate.text = formattedDate(article.publishedAt)
-                newsSource.text = article.source.name
+                newsPublishedDate.text = formattedDate(article.publishedAt!!)
+                newsSource.text = article.source!!.name
 
 
                 Glide.with(newsImage.context)
