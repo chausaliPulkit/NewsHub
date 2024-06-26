@@ -7,6 +7,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.newshub.databinding.ActivityMainBinding
 import com.example.newshub.presentation.adapter.NewsAdapter
+import com.example.newshub.presentation.adapter.SavedNewsAdapter
 import com.example.newshub.presentation.viewmodel.NewsViewModel
 import com.example.newshub.presentation.viewmodel.NewsViewModelFactory
 import dagger.hilt.android.AndroidEntryPoint
@@ -19,6 +20,8 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var newsAdapter: NewsAdapter
+    @Inject
+    lateinit var savedNewsAdapter: SavedNewsAdapter
     lateinit var viewModel: NewsViewModel
     private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {

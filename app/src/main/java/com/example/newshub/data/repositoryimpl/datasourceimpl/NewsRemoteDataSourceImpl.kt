@@ -5,7 +5,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.newshub.data.api.NewsApiService
 import com.example.newshub.data.model.Article
-import com.example.newshub.data.repositoryimpl.NewsHubPagingSource
+import com.example.newshub.data.repositoryimpl.NewsHubRemotePagingSource
 import com.example.newshub.data.repositoryimpl.NewsRepositoryImpl.Companion.NETWORK_PAGE_SIZE
 import com.example.newshub.data.repositoryimpl.datasource.NewsRemoteDataSource
 import kotlinx.coroutines.flow.Flow
@@ -19,7 +19,7 @@ class NewsRemoteDataSourceImpl(
         return Pager(
             config = PagingConfig(pageSize = NETWORK_PAGE_SIZE, enablePlaceholders = true),
             pagingSourceFactory = {
-                NewsHubPagingSource(newsApiService, "", country)
+                NewsHubRemotePagingSource(newsApiService, "", country)
             }
         ).flow
     }
@@ -31,7 +31,7 @@ class NewsRemoteDataSourceImpl(
         return Pager(
             config = PagingConfig(pageSize = NETWORK_PAGE_SIZE, enablePlaceholders = false),
             pagingSourceFactory = {
-                NewsHubPagingSource(newsApiService, query, country)
+                NewsHubRemotePagingSource(newsApiService, query, country)
             }
         ).flow
     }

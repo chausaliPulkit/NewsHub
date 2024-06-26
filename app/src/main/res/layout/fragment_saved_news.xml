@@ -6,11 +6,13 @@
     android:orientation="vertical"
     tools:context=".SavedNewsFragment">
 
+    <!--    This search view should be added in future to add
+        locally search functionality-->
 
-    <SearchView
-        android:id="@+id/saved_news_search_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+    <!--    <SearchView-->
+    <!--        android:id="@+id/saved_news_search_view"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content" />-->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/saved_recycler_view"

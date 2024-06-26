@@ -13,7 +13,7 @@ import java.io.IOException
 
 private const val NEWS_API_STARTING_PAGE_INDEX = 1
 
-class NewsHubPagingSource(
+class NewsHubRemotePagingSource(
     private val service: NewsApiService,
     private val query: String,
     private val country: String

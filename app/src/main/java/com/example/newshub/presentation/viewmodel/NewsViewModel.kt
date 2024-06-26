@@ -7,11 +7,14 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.newshub.data.model.Article
+import com.example.newshub.domain.usecase.DeleteSavedNewsUseCase
 import com.example.newshub.domain.usecase.GetNewsHeadlinesUseCase
+import com.example.newshub.domain.usecase.GetSavedNewsUseCase
 import com.example.newshub.domain.usecase.GetSearchedNewsUseCase
 import com.example.newshub.domain.usecase.SaveNewsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,7 +28,9 @@ class NewsViewModel @Inject constructor(
     private val applicationContext: Application,
     private val getNewsHeadlinesUseCase: GetNewsHeadlinesUseCase,
     private val getSearchedNewsUseCase: GetSearchedNewsUseCase,
-    private val saveNewsUseCase: SaveNewsUseCase
+    private val saveNewsUseCase: SaveNewsUseCase,
+    private val getSavedNewsUseCase: GetSavedNewsUseCase,
+    private val deleteSavedNewsUseCase: DeleteSavedNewsUseCase
 ) : AndroidViewModel(applicationContext) {
     val newsHeadlines: Flow<PagingData<Article>> =
         getNewsHeadlinesUseCase.execute("in").cachedIn(viewModelScope)
@@ -38,8 +43,23 @@ class NewsViewModel @Inject constructor(
         searchedNewsHeadlines = apiResult
     }
 
+    //    This function will save article to local database
     fun saveArticleLocally(article: Article) = viewModelScope.launch {
         saveNewsUseCase.execute(article)
+    }
+
+    //    This function will help to get saved news article from local database
+    fun getSavedNewsArticle() = liveData {
+        getSavedNewsUseCase.execute().collect {
+            emit(it)
+        }
+    }
+
+    //    This function will delete given article from local database
+    fun deleteArticleFromDb(article: Article) {
+        viewModelScope.launch {
+            deleteSavedNewsUseCase.execute(article)
+        }
     }
 
 //    fun getNewsHeadlines(country: String, page: Int) {
